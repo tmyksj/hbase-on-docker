@@ -1,0 +1,153 @@
+version: "3"
+
+services:
+  hadoop-resourcemanager:
+    build:
+      context: .
+      dockerfile: dockerfile-hadoop
+      args:
+        hadoop_uri: http://ftp.jaist.ac.jp/pub/apache/hadoop/common/hadoop-3.0.0-beta1/hadoop-3.0.0-beta1.tar.gz
+    image: hbase-on-docker--hadoop
+    hostname: hadoop-resourcemanager
+    command: resourcemanager proxyserver
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+
+  hadoop-historyserver:
+    image: hbase-on-docker--hadoop
+    hostname: hadoop-historyserver
+    command: historyserver
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+
+  hadoop-namenode:
+    image: hbase-on-docker--hadoop
+    hostname: hadoop-namenode
+    command: namenode
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+
+  hadoop-secondarynamenode:
+    image: hbase-on-docker--hadoop
+    hostname: hadoop-secondarynamenode
+    command: secondarynamenode
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+
+  hadoop-datanode-1:
+    image: hbase-on-docker--hadoop
+    hostname: hadoop-datanode-1
+    command: datanode nodemanager
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+
+  hadoop-datanode-2:
+    image: hbase-on-docker--hadoop
+    hostname: hadoop-datanode-2
+    command: datanode nodemanager
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+
+  hadoop-datanode-3:
+    image: hbase-on-docker--hadoop
+    hostname: hadoop-datanode-3
+    command: datanode nodemanager
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+
+  hbase-master:
+    build:
+      context: .
+      dockerfile: dockerfile-hbase
+      args:
+        hbase_uri: http://ftp.jaist.ac.jp/pub/apache/hbase/2.0.0-alpha4/hbase-2.0.0-alpha4-bin.tar.gz
+    image: hbase-on-docker--hbase
+    hostname: hbase-master
+    command: master
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+    depends_on:
+      - hbase-backup-master
+      - hbase-regionserver-1
+      - hbase-regionserver-2
+      - hbase-regionserver-3
+
+  hbase-backup-master:
+    image: hbase-on-docker--hbase
+    hostname: hbase-backup-master
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+
+  hbase-regionserver-1:
+    image: hbase-on-docker--hbase
+    hostname: hbase-regionserver-1
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+
+  hbase-regionserver-2:
+    image: hbase-on-docker--hbase
+    hostname: hbase-regionserver-2
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+
+  hbase-regionserver-3:
+    image: hbase-on-docker--hbase
+    hostname: hbase-regionserver-3
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+
+  zookeeper-1:
+    build:
+      context: .
+      dockerfile: dockerfile-zookeeper
+      args:
+        zookeeper_uri: http://ftp.jaist.ac.jp/pub/apache/zookeeper/zookeeper-3.4.11/zookeeper-3.4.11.tar.gz
+    image: hbase-on-docker--zookeeper
+    hostname: zookeeper-1
+    command: /var/lib/zookeeper 1
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+
+  zookeeper-2:
+    image: hbase-on-docker--zookeeper
+    hostname: zookeeper-2
+    command: /var/lib/zookeeper 2
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"
+
+  zookeeper-3:
+    image: hbase-on-docker--zookeeper
+    hostname: zookeeper-3
+    command: /var/lib/zookeeper 3
+    volumes:
+      - "./docker-config:/docker-config:ro"
+    expose:
+      - "0-65535"

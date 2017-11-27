@@ -1,0 +1,18 @@
+FROM debian:stretch
+
+ARG zookeeper_uri
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+ENV ZOOKEEPER_HOME /usr/lib/zookeeper
+
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y curl openssh-server pdsh openjdk-8-jdk \
+    && mkdir -p ${ZOOKEEPER_HOME} \
+    && curl ${zookeeper_uri} | tar xzf - -C ${ZOOKEEPER_HOME} --strip-components 1 \
+    && mkdir /docker-config \
+    && mkdir /docker-entrypoint \
+    && touch /docker-entrypoint/first-run
+
+COPY docker-entrypoint/common /docker-entrypoint/common
+COPY docker-entrypoint/zookeeper.sh /docker-entrypoint
+ENTRYPOINT ["/docker-entrypoint/zookeeper.sh"]

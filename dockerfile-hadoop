@@ -1,0 +1,19 @@
+FROM debian:stretch
+
+ARG hadoop_uri
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+ENV HADOOP_HOME /usr/lib/hadoop
+
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y curl openssh-server pdsh openjdk-8-jdk \
+    && mkdir -p ${HADOOP_HOME} \
+    && curl ${hadoop_uri} | tar xzf - -C ${HADOOP_HOME} --strip-components 1 \
+    && sed -i 's!^export JAVA_HOME=${JAVA_HOME}$!export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64!g' ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh \
+    && mkdir /docker-config \
+    && mkdir /docker-entrypoint \
+    && touch /docker-entrypoint/first-run
+
+COPY docker-entrypoint/common /docker-entrypoint/common
+COPY docker-entrypoint/hadoop.sh /docker-entrypoint
+ENTRYPOINT ["/docker-entrypoint/hadoop.sh"]

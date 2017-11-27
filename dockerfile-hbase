@@ -1,0 +1,20 @@
+FROM debian:stretch
+
+ARG hbase_uri
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+ENV HBASE_HOME /usr/lib/hbase
+
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y curl openssh-server pdsh openjdk-8-jdk \
+    && mkdir -p ${HBASE_HOME} \
+    && curl ${hbase_uri} | tar xzf - -C ${HBASE_HOME} --strip-components 1 \
+    && sed -i 's!^# export JAVA_HOME=/usr/java/jdk1.8.0/$!export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64!g' ${HBASE_HOME}/conf/hbase-env.sh \
+    && sed -i 's!^# export HBASE_MANAGES_ZK=true$!export HBASE_MANAGES_ZK=false!g' ${HBASE_HOME}/conf/hbase-env.sh \
+    && mkdir /docker-config \
+    && mkdir /docker-entrypoint \
+    && touch /docker-entrypoint/first-run
+
+COPY docker-entrypoint/common /docker-entrypoint/common
+COPY docker-entrypoint/hbase.sh /docker-entrypoint
+ENTRYPOINT ["/docker-entrypoint/hbase.sh"]
