@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: dockerfile-hadoop
       args:
-        hadoop_uri: http://ftp.jaist.ac.jp/pub/apache/hadoop/common/hadoop-3.0.0-beta1/hadoop-3.0.0-beta1.tar.gz
+        hadoop_uri: http://ftp.jaist.ac.jp/pub/apache/hadoop/common/hadoop-3.0.0/hadoop-3.0.0.tar.gz
     image: hbase-on-docker--hadoop
     hostname: hadoop-resourcemanager
     command: resourcemanager proxyserver
